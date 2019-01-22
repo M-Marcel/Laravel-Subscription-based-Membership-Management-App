@@ -16,21 +16,21 @@
 Auth::routes();
 
 Route::get('/login/admin', 'Auth\LoginController@showAdminLoginForm');
-Route::get('/login/writer', 'Auth\LoginController@showWriterLoginForm');
+Route::get('/login/member', 'Auth\LoginController@showmMemberLoginForm');
 Route::get('/register/admin', 'Auth\RegisterController@showAdminRegisterForm');
-Route::get('/', 'Auth\RegWriterController@showWriterRegisterForm');
-Route::get('/complete/{id}', 'Auth\RegWriterController@completeRegisterationForm');
+Route::get('/', 'Auth\RegMemberController@showMemberRegisterForm');
+Route::get('/complete/{id}', 'Auth\RegMemberController@completeRegisterationForm');
 
 Route::post('/login/admin', 'Auth\LoginController@adminLogin');
-Route::post('/login/writer', 'Auth\LoginController@writerLogin');
+Route::post('/login/member', 'Auth\LoginController@MemberLogin');
 Route::post('/register/admin', 'Auth\RegisterController@createAdmin');
-Route::post('/registerMember/writer', 'Auth\RegWriterController@createWriter');
-Route::post('/complete', 'Auth\RegWriterController@completeRegisteration');
-Route::match(['put', 'patch'], '/complete/{id}', 'Auth\RegWriterController@completeRegisteration')->name('completeRegistration');
+Route::post('/registerMember/member', 'Auth\RegMemberController@createMember');
+Route::post('/complete', 'Auth\RegMemberController@completeRegisteration');
+Route::match(['put', 'patch'], '/complete/{id}', 'Auth\RegMemberController@completeRegisteration')->name('completeRegistration');
 
 Route::view('/home', 'home')->middleware('auth');
 Route::view('/admin', 'admin');
-Route::view('/writer', 'writer');
+Route::view('/member', 'member');
 
 //Callback Link
 Route::get('/completeRegisteration/{$name}', 'HomeController@callbackLink');
@@ -50,4 +50,4 @@ Route::get('/login/member', 'MemberController@showMemberLoginForm');
 Route::post('/login/member', 'MemberController@memberLogin');
 
 Route::post('/pay', 'PaymentController@redirectToGateway')->name('pay');
-Route::get('/payment/callback', 'PaymentController@handleGatewayCallback');
+Route::get('/payment/callback', 'MemberController@handleGatewayCallback');

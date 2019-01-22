@@ -1,5 +1,5 @@
 <?php
-
+use Auth;
 namespace App\Http\Controllers;
 
 class HomeController extends Controller

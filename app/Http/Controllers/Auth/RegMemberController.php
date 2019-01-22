@@ -3,13 +3,14 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Writer;
+use App\Member;
+use Auth;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
-class RegWriterController extends Controller
+class RegMemberController extends Controller
 {
     /*
     |--------------------------------------------------------------------------
@@ -38,7 +39,7 @@ class RegWriterController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('guest:writer');
+        $this->middleware('guest:member');
     }
 
     /**
@@ -51,54 +52,57 @@ class RegWriterController extends Controller
     {
         return Validator::make($data, [
             'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:writers',
+            'email' => 'required|string|email|max:255|unique:members',
             'password' => 'nullable',
         ]);
     }
 
-    public function showWriterRegisterForm()
+    public function showMemberRegisterForm()
     {
-        return view('auth.registerMember', ['url' => 'writer']);
+        return view('auth.registerMember', ['url' => 'member']);
     }
 
-    protected function createWriter(Request $request)
+    protected function createMember(Request $request)
     {
         $this->validator($request->all())->validate();
-        $writer = Writer::create([
-            'name' => $request['name'],
+        $member = Member::create([
+            'name' => ucwords($request['name']),
             'email' => $request['email'],
         ]);
-        // \Mail::to($writer)->send(new Notification($writer));
-        //Event::fire(new EmailRegistered($writer->id));
-        //event(new EmailRegistered($writer->id));
-        //return redirect()->intended('login/writer');
-        //return view('/working', compact('writer'));
-        $id = $writer->id;
+        // \Mail::to($member)->send(new Notification($member));
+        //Event::fire(new EmailRegistered($member->id));
+        //event(new EmailRegistered($member->id));
+        //return redirect()->intended('login/member');
+        //return view('/working', compact('member'));
+        $id = $member->id;
         return view('/link', compact('id'));
     }
 
     public function completeRegisterationForm($id)
     {
-        $data = Writer::find($id);
+        $data = Member::find($id);
         return view('/auth.completeRegistration', compact('data'));
     }
 
     public function completeRegisteration(Request $request, $id)
     {
         $this->validate($request, [
-            'name' => 'required|string|max:255',
+            'first_name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255',
             'phone' => 'required|string||min:11',
             'password' => 'required|string|min:6|confirmed',
         ]);
 
-        $data = Writer::find($id);
-        $data->name = $request->input('name');
+        $data = Member::find($id);
+        $data->name = ucwords($request->input('first_name')) . ' ' . ucwords($request->input('last_name'));
+        $data->first_name = ucwords($request->input('first_name'));
+        $data->last_name = ucwords($request->input('last_name'));
         $data->email = $request->input('email');
         $data->phone = $request->input('phone');
         $data->password = Hash::make($request->input('password'));
         $data->save();
-        return view('/paystack');
+        return view('/pay')->with('data', $data);
     }
 
 }
